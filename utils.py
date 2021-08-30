@@ -3,19 +3,18 @@ from pytorch_transformers import BertTokenizer
 from os import path, mkdir
 import numpy
 import tqdm
-from main import args
 
 MAX_LENGTH = 88
 
 
-def read_file(file_name):
+def read_file(file_name, bert_path):
     cache_file = 'data/cache/' + file_name[5:].replace('.txt', '.npy')
     if path.exists(cache_file):
         print('loading cached data from {}'.format(cache_file))
         data = numpy.load(cache_file, allow_pickle=True)
         print(data.shape)
         return data
-    tokenizer = BertTokenizer.from_pretrained(args.bert_path)
+    tokenizer = BertTokenizer.from_pretrained(bert_path)
     data = []
     with open(file_name) as f:
         for line in tqdm.tqdm(f):
@@ -87,7 +86,7 @@ def split_dataset():
 def test():
     # split_dataset()
     # eval_dataset()
-    read_file('data/test.txt')
+    read_file('data/test.txt', bert_path='')
     pass
 
 

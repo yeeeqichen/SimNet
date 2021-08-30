@@ -3,15 +3,15 @@ import numpy
 
 
 class DataLoader:
-    def __init__(self, file_path, purpose='train', batch_size=32):
+    def __init__(self, file_path, purpose='train', batch_size=32, bert_path=''):
         self.purpose = purpose
         self.batch_size = batch_size
-        self.data = read_file(file_path)
-        self.ids_1 = numpy.array([triple[0][0] for triple in self.data])
-        self.masks_1 = numpy.array([triple[0][1] for triple in self.data])
-        self.ids_2 = numpy.array([triple[1][0] for triple in self.data])
-        self.masks_2 = numpy.array([triple[1][1] for triple in self.data])
-        self.label = numpy.array([[int(triple[2])]for triple in self.data])
+        self.data = read_file(file_path, bert_path)
+        self.ids_1 = numpy.array([triple[0][0] for triple in self.data], dtype=float)
+        self.masks_1 = numpy.array([triple[0][1] for triple in self.data], dtype=float)
+        self.ids_2 = numpy.array([triple[1][0] for triple in self.data], dtype=float)
+        self.masks_2 = numpy.array([triple[1][1] for triple in self.data], dtype=float)
+        self.label = numpy.array([int(triple[2])for triple in self.data], dtype=float)
 
     def get_batch_data(self):
         total_steps = len(self.data) // self.batch_size

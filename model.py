@@ -7,6 +7,8 @@ class Model(torch.nn.Module):
         super(Model, self).__init__()
         self.device = device
         self.bert_encoder = BertModel.from_pretrained(bert_path)
+        for param in self.bert_encoder.parameters():
+            param.requires_grad = True
         self.nonlinear_func = torch.nn.Sequential(
             torch.nn.Linear(768, 256),
             torch.nn.PReLU(),
@@ -31,6 +33,7 @@ class Model(torch.nn.Module):
         hidden_2 = torch.mean(encode_2[0], dim=1)
         output_1 = self.nonlinear_func(hidden_1)
         output_2 = self.nonlinear_func(hidden_2)
+        # print(output_1.shape, output_2.shape)
         return output_1, output_2
 
 

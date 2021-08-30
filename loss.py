@@ -14,13 +14,15 @@ class CrossEntropyLoss(torch.nn.Module):
     def forward(self, hidden_1, hidden_2, label):
         label = torch.LongTensor(label).to(self.device)
         scores = self.classification(torch.cat((hidden_1, hidden_2), dim=-1))
+        # print(scores.shape, label.shape)
         loss = self.loss_func(scores, label)
-        return loss
+        return loss, scores
 
 
 class DistanceLoss(torch.nn.Module):
-    def __init__(self):
+    def __init__(self, margin=1):
         super(DistanceLoss, self).__init__()
+        self.margin = margin
         pass
 
 
