@@ -4,7 +4,7 @@ from sklearn import metrics
 import time
 
 
-def train(train_iter, dev_iter, model, optimizer, dev_steps, num_epochs):
+def train(train_iter, dev_iter, model, optimizer, dev_steps, num_epochs, train_sampler):
     # start_time = time.time()
     model.train()
     loss_func = torch.nn.CrossEntropyLoss()
@@ -12,6 +12,7 @@ def train(train_iter, dev_iter, model, optimizer, dev_steps, num_epochs):
     dev_best_loss = float('inf')
     total_batch = 0
     for epoch in range(num_epochs):
+        train_sampler.set_epoch(epoch)
         for step, (inputs, labels) in enumerate(train_iter):
             outputs = model(inputs)
             model.zero_grad()

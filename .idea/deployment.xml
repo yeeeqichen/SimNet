@@ -1,4 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
-  <component name="PublishConfigData" serverName="219.223.192.244" remoteFilesAllowedToDisappearOnAutoupload="false" />
+  <component name="PublishConfigData" serverName="219.223.192.244" remoteFilesAllowedToDisappearOnAutoupload="false">
+    <serverData>
+      <paths name="219.223.192.244">
+        <serverdata>
+          <mappings>
+            <mapping deploy="/SiameseNetwork" local="$PROJECT_DIR$" web="/" />
+          </mappings>
+        </serverdata>
+      </paths>
+    </serverData>
+  </component>
 </project>
