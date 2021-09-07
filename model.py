@@ -1,10 +1,12 @@
 import torch
 from pytorch_transformers import BertModel
+import torchsnooper
 
 
 class Model(torch.nn.Module):
-    def __init__(self, output_size, bert_path, device='cuda:0'):
+    def __init__(self, output_size, bert_path, device='cuda:0', method=0):
         super(Model, self).__init__()
+        self.method = method
         self.device = device
         self.bert_encoder = BertModel.from_pretrained(bert_path)
         for param in self.bert_encoder.parameters():
@@ -16,25 +18,33 @@ class Model(torch.nn.Module):
             torch.nn.PReLU(),
             torch.nn.Linear(128, output_size)
         )
+        if self.method == 0:
+            self.classification = torch.nn.Linear(2 * output_size, 2)
+        else:
+            self.classification = torch.nn.Linear(output_size, 2)
 
-    def to_tensor(self, inputs):
-        return torch.LongTensor(inputs).to(self.device)
-
-    def forward(self, ids_1, masks_1, ids_2, masks_2):
-        encode_1 = self.bert_encoder(
-            input_ids=self.to_tensor(ids_1),
-            attention_mask=self.to_tensor(masks_1)
-        )
-        encode_2 = self.bert_encoder(
-            input_ids=self.to_tensor(ids_2),
-            attention_mask=self.to_tensor(masks_2)
-        )
-        hidden_1 = torch.mean(encode_1[0], dim=1)
-        hidden_2 = torch.mean(encode_2[0], dim=1)
-        output_1 = self.nonlinear_func(hidden_1)
-        output_2 = self.nonlinear_func(hidden_2)
-        # print(output_1.shape, output_2.shape)
-        return output_1, output_2
+    # @torchsnooper.snoop()
+    def forward(self, inputs):
+        if self.method == 0:
+            encode_1 = self.bert_encoder(
+               inputs[0], attention_mask=inputs[4]
+            )
+            encode_2 = self.bert_encoder(
+                inputs[1], attention_mask=inputs[5]
+            )
+            hidden_1 = torch.mean(encode_1[0], dim=1)
+            hidden_2 = torch.mean(encode_2[0], dim=1)
+            output_1 = self.nonlinear_func(hidden_1)
+            output_2 = self.nonlinear_func(hidden_2)
+            return self.classification(torch.cat((output_1, output_2), dim=-1))
+        else:
+            hidden_state = self.bert_encoder(
+                inputs[0],
+                attention_mask=inputs[2],
+                token_type_ids=inputs[3]
+            )[1]
+            output = self.nonlinear_func(hidden_state)
+            return self.classification(output)
 
 
 if __name__ == '__main__':

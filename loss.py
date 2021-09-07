@@ -8,8 +8,8 @@ class CrossEntropyLoss(torch.nn.Module):
         self.classification = torch.nn.Sequential(
             torch.nn.Linear(input_size, 2),
             torch.nn.Softmax(dim=1)
-        )
-        self.loss_func = torch.nn.CrossEntropyLoss()
+        ).to(self.device)
+        self.loss_func = torch.nn.CrossEntropyLoss().to(self.device)
 
     def forward(self, hidden_1, hidden_2, label):
         label = torch.LongTensor(label).to(self.device)
